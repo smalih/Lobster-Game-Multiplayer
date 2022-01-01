@@ -57,14 +57,13 @@ let weekIndex = 1;
 const sock = io();
 
 btnReady.addEventListener("click", (e) => {
-  console.log("hello");
-
   if (checkShoreInputs() === true) {
     const payload = {
       clientId: clientId,
       gameId: gameId,
     };
     sock.emit("potsReady", JSON.stringify(payload));
+    btnReady.disabled = true;
   }
 });
 
@@ -81,8 +80,10 @@ sock.on("initialConnect", (message) => {
 });
 
 sock.on("rollDice", (message) => {
+  console.log("rollDice received from server");
   const response = JSON.parse(message);
   const decision = response.decision;
+  const roll = response.roll;
   if (day == "Sat" || day == "Sun") {
     weather.children("p:first").text("-");
   } else {
@@ -168,6 +169,14 @@ function calcIncomeCostProfit(decision) {
     totalVal += profitVal;
     total.children("p:first").text(totalVal);
   }
+
+  const payload = {
+    clientId: clientId,
+    gameId: gameId,
+    total: totalVal,
+  };
+
+  sock.emit("outcome", JSON.stringify(payload));
 }
 
 function addRow() {

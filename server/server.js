@@ -41,7 +41,7 @@ io.on("connection", (sock) => {
         id: gameId,
         clients: [],
         hostId: result.clientId,
-        hostSock: clients[result.clientId],
+        hostSock: sock,
         totals: {},
       };
     }
@@ -61,7 +61,7 @@ io.on("connection", (sock) => {
     const payload = {
       playerId: clientId,
     };
-    if (clientId === game.hostId) {
+    if (clientId !== game.hostId) {
       game.hostSock.emit("newPlayer", JSON.stringify(payload));
     }
   });
@@ -70,11 +70,12 @@ io.on("connection", (sock) => {
     const result = JSON.parse(message);
     const clientId = result.clientId;
     const gameId = result.gameId;
+    const game = games[gameId];
 
     const payload = {
-      clientId: clientId,
+      playerId: clientId,
     };
-    io.to(gameId).emit("playerReady", JSON.stringify(payload));
+    game.hostSock.emit("playerReady", JSON.stringify(payload));
   });
 
   sock.on("rollDice", (message) => {
@@ -82,7 +83,6 @@ io.on("connection", (sock) => {
     const roll = result.roll;
     const decision = result.decision;
     const gameId = result.gameId;
-
     const payload = {
       roll: roll,
       decision: decision,
@@ -97,13 +97,17 @@ io.on("connection", (sock) => {
     const clientId = result.clientId;
     const total = result.total;
 
-    let states = games[gameId].state;
+    let totals = games[gameId].totals;
 
-    if (!states[clientId]) {
-      states[clientId] = [];
+    if (!totals[clientId]) {
+      totals[clientId] = [];
     }
-    states[clientId].append(total);
-    games[gameId].states = states;
+    totals[clientId].push(total);
+    games[gameId].totals = totals;
+    const payload = {
+      playerId: clientId,
+      total: total,
+    };
 
     games[gameId].hostSock.emit("update", JSON.stringify(payload));
   });
