@@ -1,0 +1,89 @@
+<head>
+  <link rel="stylesheet" href="../client/styles/test.css">
+</head>
+<h1>
+    Lobster Pot Game - Player (Game ID:
+    <span id="spanGameId"><%= locals.serverGenGameId%></span>)
+  </h1>
+<div class="game">
+  <div class="table-contents">
+      <div class="table-headings">
+          <div class="table-heading-wrapper">
+              <p>Week</p>
+          </div>
+          <div class="table-heading-wrapper">
+              <p>Day</p>
+          </div>
+          
+          <div class="table-heading-wrapper">
+              <p>Onshore</p>
+          </div>
+          <div class="table-heading-wrapper">
+              <p>Offshore</p>
+          </div>
+          <div class="table-heading-wrapper">
+              <p>Weather</p>
+          </div>
+          <div class="table-heading-wrapper">
+              <p>Income</p>
+          </div>
+          <div class="table-heading-wrapper">
+              <p>Costs</p>
+          </div>
+          <div class="table-heading-wrapper">
+              <p>Profit</p>
+          </div>
+          <div class="table-heading-wrapper">
+              <p>Total</p>
+          </div>
+      </div>
+      <div class="table-cells">
+          <div class="week table-cell-wrapper latest">
+              <p>1</p>
+          </div>
+          <div class="day table-cell-wrapper latest">
+              <p>Mon</p>
+          </div>
+
+          <div class="onshore table-cell-wrapper latest">
+              <input type="number" value="0" class="onshore-input latest">
+          </div>
+          <div class="offshore table-cell-wrapper latest">
+              <input type="number" value="0" class="offshore-input latest">
+          </div>
+          <div class="weather table-cell-wrapper latest">
+              <p></p>
+          </div>
+          <div class="income table-cell-wrapper latest">
+              <p></p>
+          </div>
+          <div class="costs table-cell-wrapper latest">
+              <p></p>
+          </div>
+          <div class="profit table-cell-wrapper latest">
+              <p></p>
+          </div>
+          <div class="total table-cell-wrapper latest">
+              <p></p>
+          </div>
+          
+          
+              
+      </div>
+
+  </div>
+</div>
+  
+
+
+
+  
+  <div class="menu">
+      <!-- <button class="m-item start">Start</div> -->
+      <button id='btnReady' class="m-item btnReady">Ready</button>
+      
+  </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="../src/player.js"></script>

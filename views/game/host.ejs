@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" />
+    <link rel="stylesheet" href="styles/test.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>
+      Lobster Pot Game - Host (Game ID:
+      <span id="spanGameId"><%= locals.serverGenGameId%></span>)
+    </h1>
+    <button id="btnRoll">Roll Dice</button>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="../src/host.js"></script>
+  </body>
+</html>
