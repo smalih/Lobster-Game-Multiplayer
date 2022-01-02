@@ -15,7 +15,10 @@ router.get("/:id/", (req, res) => {
   if (isHost) {
     res.render("game/host.ejs", { serverGenGameId: req.params.id });
   } else {
-    res.render("game/player.ejs", { serverGenGameId: req.params.id });
+    res.render("game/player.ejs", {
+      serverGenGameId: req.params.id,
+      playerName: req.query.name,
+    });
   }
 });
 

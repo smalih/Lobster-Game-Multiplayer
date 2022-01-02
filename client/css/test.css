@@ -125,14 +125,14 @@ input:focus {
   transition: 0.5s background, 0.5s box-shadow;
 }
 
-.btnReady:disabled {
-  background: #021827;
-}
-
 .btnReady:hover {
   background: #6bffda;
   box-shadow: 0 0 5px 5px #6bffda33;
   cursor: pointer;
+}
+
+.disabled {
+  pointer-events: none;
 }
 
 @media (max-width: 1250px) {

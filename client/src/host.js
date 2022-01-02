@@ -1,4 +1,5 @@
 const btnRoll = document.getElementById("btnRoll");
+const tableHeadings = document.getElementsByClassName("table-headings")[0];
 const min = 1;
 const max = 6;
 btnRoll.addEventListener("click", (e) => {
@@ -22,6 +23,7 @@ btnRoll.addEventListener("click", (e) => {
 
 const players = {};
 const playerTotals = {};
+const playerNames = {};
 
 const sock = io();
 sock.on("initialConnect", (message) => {
@@ -39,8 +41,11 @@ sock.on("initialConnect", (message) => {
 sock.on("newPlayer", (message) => {
   const response = JSON.parse(message);
   const playerId = response.playerId;
+  const playerName = response.playerName;
   players[playerId] = false;
   playerTotals[playerId] = [];
+  playerNames[playerId] = playerName;
+  addPlayerToHTML(playerName);
 });
 
 sock.on("playerReady", (message) => {
@@ -90,4 +95,34 @@ function rollDice(min, max) {
     gameId: gameId,
   };
   sock.emit("rollDice", JSON.stringify(payload));
+}
+
+// const b = document.createElement("button");
+// b.id = `ball${i + 1}`;
+// b.tag = i + 1;
+// b.textContent = i + 1;
+// b.style.width = "150px";
+// b.style.height = "150px";
+
+// b.addEventListener("click", (e) => {
+//   b.style.background = playerColor;
+//   const payload = {
+//     clientId: clientId,
+//     gameId: gameId,
+//     // returing tag of b in payload so 1-indexing
+//     ballId: b.tag,
+//     color: playerColor,
+//   };
+//   sock.emit("play", JSON.stringify(payload));
+// });
+// divBoard.appendChild(b);
+
+function addPlayerToHTML(playerName) {
+  const p = document.createElement("p");
+  const textNode = document.createTextNode(`${playerName}`);
+  p.appendChild(textNode);
+  const d = document.createElement("div");
+  d.classList.add("table-heading-wrapper");
+  d.appendChild(p);
+  tableHeadings.appendChild(d);
 }

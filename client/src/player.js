@@ -63,7 +63,7 @@ btnReady.addEventListener("click", (e) => {
       gameId: gameId,
     };
     sock.emit("potsReady", JSON.stringify(payload));
-    btnReady.disabled = true;
+    btnReady.classList.add("disabled");
   }
 });
 
@@ -71,19 +71,22 @@ sock.on("initialConnect", (message) => {
   const response = JSON.parse(message);
   clientId = response.clientId;
   gameId = document.getElementById("spanGameId").innerText;
+  const playerName = document.getElementById("spanPlayerName").innerText;
 
   const payload = {
     clientId: clientId,
     gameId: gameId,
+    playerName: playerName,
   };
   sock.emit("join", JSON.stringify(payload));
 });
 
 sock.on("rollDice", (message) => {
-  console.log("rollDice received from server");
+  btnReady.classList.remove("disabled");
   const response = JSON.parse(message);
   const decision = response.decision;
   const roll = response.roll;
+  alert(`Roll is a ${roll} - ${decision} weather!`);
   if (day == "Sat" || day == "Sun") {
     weather.children("p:first").text("-");
   } else {

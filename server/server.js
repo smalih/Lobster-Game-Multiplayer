@@ -50,6 +50,7 @@ io.on("connection", (sock) => {
   sock.on("join", (message) => {
     const result = JSON.parse(message);
     const clientId = result.clientId;
+    const playerName = result.playerName;
     const gameId = result.gameId;
     sock.join(gameId);
     const game = games[gameId];
@@ -60,6 +61,7 @@ io.on("connection", (sock) => {
 
     const payload = {
       playerId: clientId,
+      playerName: playerName,
     };
     if (clientId !== game.hostId) {
       game.hostSock.emit("newPlayer", JSON.stringify(payload));
