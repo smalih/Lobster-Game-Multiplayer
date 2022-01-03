@@ -112,6 +112,19 @@ io.on("connection", (sock) => {
     };
 
     games[gameId].hostSock.emit("update", JSON.stringify(payload));
+    console.log("emitted update", gameId);
+  });
+
+  sock.on("finalStandings", (message) => {
+    result = JSON.parse(message);
+    const gameId = result.gameId;
+    const totals = result.totals;
+    const payload = {
+      totals: result.totals,
+    };
+    console.log(totals);
+    finalStandings = getWinningOrder(totals);
+    io.to(gameId).emit("finalStandings", JSON.stringify(payload));
   });
 });
 
@@ -141,3 +154,15 @@ const guid = () =>
     S4() +
     S4()
   ).toLowerCase();
+
+function getWinningOrder(totals) {
+  const entries = Object.keys(totals).map(function (key) {
+    return [key, totals[key]];
+  });
+
+  entries.sort(function (first, second) {
+    return second[1] - first[1];
+  });
+  console.log(entries);
+  return entries;
+}

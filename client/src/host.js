@@ -1,5 +1,7 @@
 const btnRoll = document.getElementById("btnRoll");
+const btnEndGame = document.getElementById("btnEndGame");
 const tableHeadings = document.getElementsByClassName("table-headings")[0];
+const tableCells = document.getElementsByClassName("table=cells")[0];
 const min = 1;
 const max = 6;
 btnRoll.addEventListener("click", (e) => {
@@ -21,6 +23,18 @@ btnRoll.addEventListener("click", (e) => {
   }
 });
 
+btnEndGame.addEventListener("click", (e) => {
+  const payload = {
+    gameId: gameId,
+    totals: {},
+  };
+  console.log(playerTotals);
+  for (const playerId of Object.keys(players)) {
+    payload.totals[playerNames[playerId]] = playerTotals[playerId].at(-1);
+  }
+
+  sock.emit("finalStandings", JSON.stringify(payload));
+});
 const players = {};
 const playerTotals = {};
 const playerNames = {};
@@ -60,7 +74,7 @@ sock.on("update", (message) => {
   const total = response.total;
 
   playerTotals[playerId].push(total);
-  console.log(playerId, total);
+  console.log(playerTotals);
 });
 function S4() {
   return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
@@ -126,3 +140,10 @@ function addPlayerToHTML(playerName) {
   d.appendChild(p);
   tableHeadings.appendChild(d);
 }
+
+// function updatePlayerHTMLScore(playerTotal) {
+//   const p = document.createElement("p");
+//   const textNode = document.createTextNode(`${playerTotal}`);
+//   const d = document.createElement('div');
+//   d.classList.add('')
+// }

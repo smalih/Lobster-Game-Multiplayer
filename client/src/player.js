@@ -180,6 +180,7 @@ function calcIncomeCostProfit(decision) {
   };
 
   sock.emit("outcome", JSON.stringify(payload));
+  console.log("emitted outcome");
 }
 
 function addRow() {
