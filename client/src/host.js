@@ -1,10 +1,16 @@
-const btnRoll = document.getElementById("btnRoll");
-const btnEndGame = document.getElementById("btnEndGame");
-const tableHeadings = document.getElementsByClassName("table-headings")[0];
-const tableCells = document.getElementsByClassName("table=cells")[0];
+const btnRoll = $("#btnRoll");
+const btnEndGame = $("#btnEndGame");
+const tableHeadings = $(".table-headings");
+const tableCells = $(".table-cells");
 const min = 1;
 const max = 6;
-btnRoll.addEventListener("click", (e) => {
+let count = 0;
+
+$(".table-contents").css("grid-template-columns", "repeat(2, 1fr)");
+tableHeadings.css("grid-template-columns", "repeat(2, 1fr)");
+tableCells.css("grid-template-columns", "repeat(2, 1fr)");
+
+btnRoll.click(function () {
   let playersReady = true;
   for (const player of Object.values(players)) {
     if (player === false) {
@@ -14,6 +20,7 @@ btnRoll.addEventListener("click", (e) => {
   if (playersReady === true) {
     rollDice(min, max);
     alert("Dice rolled");
+    count++;
     for (const player of Object.keys(players)) {
       players[player] = false;
     }
@@ -23,7 +30,7 @@ btnRoll.addEventListener("click", (e) => {
   }
 });
 
-btnEndGame.addEventListener("click", (e) => {
+btnEndGame.click(function () {
   const payload = {
     gameId: gameId,
     totals: {},
@@ -75,6 +82,17 @@ sock.on("update", (message) => {
 
   playerTotals[playerId].push(total);
   console.log(playerTotals);
+  for (const totalsArray of Object.values(playerTotals)) {
+    while (totalsArray.length !== count) {
+      console.log(
+        "still waiting on score",
+        totalsArray,
+        totalsArray.length,
+        count
+      );
+    }
+  }
+  updatePlayerHTMLScores();
 });
 function S4() {
   return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
@@ -132,18 +150,46 @@ function rollDice(min, max) {
 // divBoard.appendChild(b);
 
 function addPlayerToHTML(playerName) {
-  const p = document.createElement("p");
-  const textNode = document.createTextNode(`${playerName}`);
-  p.appendChild(textNode);
-  const d = document.createElement("div");
-  d.classList.add("table-heading-wrapper");
-  d.appendChild(p);
-  tableHeadings.appendChild(d);
+  const newLength = Object.keys(players).length;
+  $(".table-contents").css(
+    "grid-template-columns",
+    `repeat(${newLength + 1}, 1fr)`
+  );
+  tableHeadings.css("grid-template-columns", `repeat(${newLength + 1}, 1fr)`);
+
+  tableCells.css("grid-template-columns", `repeat(${newLength + 1}, 1fr)`);
+  console.log(newLength);
+  let p = document.createElement("p");
+  p = $(p);
+  p.text(`${playerName}`);
+
+  let d = document.createElement("div");
+  d = $(d);
+  d.addClass("table-heading-wrapper");
+  d.append(p);
+  tableHeadings.append(d);
+
+  p = document.createElement("p");
+  p = $(p);
+  p.text("0");
+  d = document.createElement("div");
+  d = $(d);
+  d.addClass(`${playerName} player table-cell-wrapper`);
+  d.append(p);
+  tableCells.append(d);
 }
 
-// function updatePlayerHTMLScore(playerTotal) {
-//   const p = document.createElement("p");
-//   const textNode = document.createTextNode(`${playerTotal}`);
-//   const d = document.createElement('div');
-//   d.classList.add('')
-// }
+function updatePlayerHTMLScores() {
+  for (const playerId of Object.keys(player)) {
+    playerName = playerNames[playerId];
+    playerTotal = playerTotals[playerId][0];
+    let p = document.createElement("p");
+    p = $(p);
+    p.text(`${playerTotal}`);
+    d = document.createElement("div");
+    d = $(d);
+    d.addClass(`${playerName} player table-cell-wrapper`);
+    d.append(p);
+    tableCells.append(d);
+  }
+}

@@ -1,5 +1,3 @@
-const btnCreate = document.getElementById("btnCreate");
-
-btnCreate.addEventListener("click", (e) => {
+$("#btnCreate").click(function () {
   window.location.href = `http://localhost:8080/game/new`;
 });
