@@ -5,6 +5,7 @@ const tableCells = $(".table-cells");
 const min = 1;
 const max = 6;
 let count = 0;
+let days = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"];
 
 $(".table-contents").css("grid-template-columns", "repeat(2, 1fr)");
 tableHeadings.css("grid-template-columns", "repeat(2, 1fr)");
@@ -24,6 +25,7 @@ btnRoll.click(function () {
     for (const player of Object.keys(players)) {
       players[player] = false;
     }
+    newRow();
   } else {
     alert("Not all players are ready");
     console.log(players);
@@ -45,6 +47,7 @@ btnEndGame.click(function () {
 const players = {};
 const playerTotals = {};
 const playerNames = {};
+const playerIndices = {};
 
 const sock = io();
 sock.on("initialConnect", (message) => {
@@ -63,6 +66,7 @@ sock.on("newPlayer", (message) => {
   const response = JSON.parse(message);
   const playerId = response.playerId;
   const playerName = response.playerName;
+  playerIndices[playerId] = Object.keys(players).length;
   players[playerId] = false;
   playerTotals[playerId] = [];
   playerNames[playerId] = playerName;
@@ -82,17 +86,7 @@ sock.on("update", (message) => {
 
   playerTotals[playerId].push(total);
   console.log(playerTotals);
-  for (const totalsArray of Object.values(playerTotals)) {
-    while (totalsArray.length !== count) {
-      console.log(
-        "still waiting on score",
-        totalsArray,
-        totalsArray.length,
-        count
-      );
-    }
-  }
-  updatePlayerHTMLScores();
+  updatePlayerHTMLScores(playerId);
 });
 function S4() {
   return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
@@ -129,26 +123,6 @@ function rollDice(min, max) {
   sock.emit("rollDice", JSON.stringify(payload));
 }
 
-// const b = document.createElement("button");
-// b.id = `ball${i + 1}`;
-// b.tag = i + 1;
-// b.textContent = i + 1;
-// b.style.width = "150px";
-// b.style.height = "150px";
-
-// b.addEventListener("click", (e) => {
-//   b.style.background = playerColor;
-//   const payload = {
-//     clientId: clientId,
-//     gameId: gameId,
-//     // returing tag of b in payload so 1-indexing
-//     ballId: b.tag,
-//     color: playerColor,
-//   };
-//   sock.emit("play", JSON.stringify(payload));
-// });
-// divBoard.appendChild(b);
-
 function addPlayerToHTML(playerName) {
   const newLength = Object.keys(players).length;
   $(".table-contents").css(
@@ -174,22 +148,44 @@ function addPlayerToHTML(playerName) {
   p.text("0");
   d = document.createElement("div");
   d = $(d);
-  d.addClass(`${playerName} player table-cell-wrapper`);
+  d.addClass(`player table-cell-wrapper`);
   d.append(p);
   tableCells.append(d);
 }
 
-function updatePlayerHTMLScores() {
-  for (const playerId of Object.keys(player)) {
-    playerName = playerNames[playerId];
-    playerTotal = playerTotals[playerId][0];
+function updatePlayerHTMLScores(playerId) {
+  playerIndex = playerIndices[playerId];
+  playerTotal = playerTotals[playerId].at(-1);
+  console.log(playerIndex, "playerIndex", playerNames[playerId]);
+  playerDiv =
+    tableCells.children("div")[
+      playerIndex + 1 + count * (Object.keys(players).length + 1)
+    ];
+  console.log(playerDiv, "playerDiv");
+  playerP = $(playerDiv).children("p")[0];
+  console.log(playerP, "playerP before");
+  $(playerP).text(`${playerTotal}`);
+  console.log(playerP, "playerP after");
+  console.log(playerIndex + 1 + count * (playerIndex + 1), "sum");
+}
+
+function newRow() {
+  let p = document.createElement("p");
+  p = $(p);
+  p.text(`${days[count % 7]}`);
+  d = document.createElement("div");
+  d = $(d);
+  d.addClass(`table-cell-wrapper`);
+  d.append(p);
+  tableCells.append(d);
+  for (let i = 0; i < Object.keys(players).length; i++) {
     let p = document.createElement("p");
     p = $(p);
-    p.text(`${playerTotal}`);
     d = document.createElement("div");
     d = $(d);
-    d.addClass(`${playerName} player table-cell-wrapper`);
+    d.addClass(`player table-cell-wrapper`);
     d.append(p);
     tableCells.append(d);
   }
+  console.log("engaged newRow()");
 }
